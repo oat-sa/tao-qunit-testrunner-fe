@@ -1,11 +1,14 @@
 {
-    "name": "new-test-runner",
-    "version": "1.0.0",
+    "name": "@oat-sa/tao-qunit-testrunner",
+    "version": "0.1.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test:keepAlive": "node ./src/webserver.js",
+        "test:keepAlive": "node ./bin/testrunner.js -l",
         "test": "node ./bin/testrunner.js"
+    },
+    "bin": {
+        "qunit-testrunner": "./bin/testrunner.js"
     },
     "keywords": [],
     "author": "",
