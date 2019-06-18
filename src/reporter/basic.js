@@ -39,7 +39,7 @@ function printFailedTests(result, verbose) {
             moduleResult.tests.forEach(test => {
                 if (test.failed) {
                     console.group(test.name);
-                    test.log.forEach(log => {
+                    (test.log || []).forEach(log => {
                         if (log.source) {
                             console.log(log.message);
                             if (verbose > 1) {
@@ -70,7 +70,7 @@ function printDetailedResult(result, verbose) {
             if (test.failed || verbose > 3) {
                 console.group(test.name);
 
-                test.log.forEach(log => {
+                (test.log || []).forEach(log => {
                     if ((test.failed && log.source) || verbose > 3) {
                         console.log(log.message);
                         if (log.source) {

@@ -10,7 +10,7 @@ yargs
     .usage('Usage: $0 [options] [testName]')
     .option('config', {
         alias: 'c',
-        default: '.testrunner.config.json',
+        default: '.qunit-testrunner.config.json',
         config: true
     })
     .option('testDir', {
