@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 module.exports = (options, req, res) => {
     if (req.method === 'POST') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
