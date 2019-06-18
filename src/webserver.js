@@ -38,7 +38,7 @@ class WebServer {
     }
 
     resolveMiddlewares(options) {
-        const middlewares = options.middleware || [];
+        const middlewares = options.middlewares || [];
         return middlewares.map(middleware => {
             if (typeof middleware === 'function') {
                 return middleware.bind(null, options);
