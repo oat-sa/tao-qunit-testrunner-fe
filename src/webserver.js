@@ -31,13 +31,14 @@ class WebServer {
         this.options = {
             root: process.cwd(),
             cache: -1,
-            before: this.resolveMiddlewares(options.middlewares || []),
             ...options
         };
+        this.options.before = this.resolveMiddlewares(this.options);
         this._server = new HttpServer.createServer(this.options);
     }
 
-    resolveMiddlewares(middlewares, options) {
+    resolveMiddlewares(options) {
+        const middlewares = options.middleware || [];
         return middlewares.map(middleware => {
             if (typeof middleware === 'function') {
                 return middleware.bind(null, options);
