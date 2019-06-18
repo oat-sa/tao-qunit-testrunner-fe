@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 module.exports = (options, req, res) => {
     if (req.method === 'POST') {
