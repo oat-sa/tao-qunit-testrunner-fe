@@ -47,13 +47,14 @@ class WebServer {
         });
     }
 
-    listen(port) {
+    listen(port, host) {
+        const { root } = this.options;
         return new Promise((resolve, reject) => {
             this._server.listen(port, err => {
                 if (err) {
                     return reject(err);
                 }
-                console.log(`Server is listening on http://127.0.0.1:${port}/ and serving ${this.root}`);
+                console.log(`Server is listening on http://${host}:${port}/ and serving ${root}`);
                 resolve();
             });
         });

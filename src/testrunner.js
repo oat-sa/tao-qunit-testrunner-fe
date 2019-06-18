@@ -18,39 +18,31 @@
 
 const glob = require('glob-promise');
 const path = require('path');
-const { runQunitPuppeteer, printResultSummary, printFailedTests } = require('node-qunit-puppeteer');
+const { runQunitPuppeteer } = require('node-qunit-puppeteer');
 const promiseLimit = require('promise-limit');
-const getPort = require('get-port');
 
-const WebServer = require('./webserver');
 const limit = promiseLimit(process.env.PARALLEL_TESTS || 5);
 
 class TestRunner {
     constructor(options) {
         this.options = options;
-        this.webServer = new WebServer({
-            ...options.webServer
-        });
-    }
-
-    async listen(port) {
-        if (!port) {
-            port = await getPort();
+        const { reporter, root } = options;
+        if (reporter) {
+            this.reporter = require(reporter.startsWith('.') ? path.resolve(root, reporter) : `./reporter/${reporter}`);
         }
-        this.options.port = port;
-        return this.webServer.listen(port);
     }
 
-    async collectTests(testSpec) {
-        const { testDir, root } = this.options;
-        const files = await glob(path.join(root, testDir, testSpec));
+    async collectTests() {
+        const { testDir, root, spec } = this.options;
+        const files = await glob(path.join(root, testDir, spec));
         return files.map(file => path.relative(root, file));
     }
 
     runTest(testPath) {
+        const { host, port } = this.options;
         const qunitArgs = {
             // Path to qunit tests suite
-            targetUrl: `http://127.0.0.1:${this.options.port}/${testPath}`,
+            targetUrl: `http://${host}:${port}/${testPath}`,
             // (optional, 30000 by default) global timeout for the tests suite
             timeout: 30000,
             // (optional, false by default) should the browser console be redirected or not
@@ -63,33 +55,46 @@ class TestRunner {
             ]
         };
 
-        return runQunitPuppeteer(qunitArgs);
+        return runQunitPuppeteer(qunitArgs).then(result => {
+            result.path = testPath;
+            return result;
+        });
     }
 
-    displayOutput(result) {
-        // if (TESTNAME === '*') {
-        //     process.stdout.write('.');
-        // } else {
-        // process.stdout.write(`${testFile} `);
-        printResultSummary(result, console);
-        console.log();
-        // }
-
-        if (result.stats.failed > 0) {
-            console.log(`\n${testFile}`);
-            printFailedTests(result, console);
-            hasFailed = true;
+    onTestDone(result) {
+        const { verbose } = this.options;
+        if (this.reporter) {
+            this.reporter.onTestDone(result, verbose);
         }
     }
 
-    async run(testName) {
-        const tests = await this.collectTests(path.join('**', 'test.html'));
-        await this.listen();
-        Promise.all(tests.map(test => limit(() => this.runTest(test).then(result => this.displayOutput(result)))))
+    onDone() {
+        const { verbose } = this.options;
+        if (this.reporter) {
+            this.reporter.onDone(verbose);
+        }
+    }
+
+    async start() {
+        const tests = await this.collectTests();
+        let hasFailed = false;
+        return Promise.all(
+            tests.map(test =>
+                limit(() =>
+                    this.runTest(test).then(result => {
+                        if (result.stats.failed) {
+                            hasFailed = true;
+                        }
+                        this.onTestDone(result);
+                    })
+                )
+            )
+        )
             .catch(e => console.error(e))
             .then(() => {
-                process.exit();
-            });
+                this.onDone();
+            })
+            .then(() => !hasFailed);
     }
 }
 
