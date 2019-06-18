@@ -18,7 +18,10 @@
         "glob": "^7.1.4",
         "glob-promise": "^3.4.0",
         "http-server": "^0.11.1",
+        "istanbul-lib-instrument": "^3.3.0",
+        "mocha": "^6.1.4",
         "node-qunit-puppeteer": "^1.0.12",
+        "nyc": "^14.1.1",
         "promise-limit": "^2.7.0",
         "yargs": "^13.2.4"
     },

@@ -58,8 +58,7 @@ yargs
     })
     .option('middlewares', {
         alias: 'm',
-        describe: 'Webserver middlewares',
-        choices: ['jsonPostMiddleware'],
+        describe: 'Webserver middlewares (jsonPostMiddleware, istanbulCoverage)',
         array: true
     })
     .group(['listen', 'host', 'port', 'middlewares'], 'Webserver options:')

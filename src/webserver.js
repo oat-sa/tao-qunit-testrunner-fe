@@ -38,13 +38,15 @@ class WebServer {
     }
 
     resolveMiddlewares(options) {
-        const {root, middlewares } = options;
+        const { root, middlewares } = options;
         return (middlewares || []).map(middleware => {
             if (typeof middleware === 'function') {
                 return middleware.bind(null, options);
             }
 
-            const middlewareModule = require(middleware.startsWith('.') ? path.resolve(root, middleware) : `./middleware/${middleware}`);            
+            const middlewareModule = require(middleware.startsWith('.')
+                ? path.resolve(root, middleware)
+                : `./middleware/${middleware}`);
             return middlewareModule.bind(null, options);
         });
     }

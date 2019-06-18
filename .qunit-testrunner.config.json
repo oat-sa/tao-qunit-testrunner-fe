@@ -1,3 +1,6 @@
 {
-    "verbose": 1
+    "verbose": 1,
+    "testDir": "exampleTest",
+    "middlewares": ["istanbulCoverage"],
+    "port": 8082
 }
