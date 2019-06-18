@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const path = require('path');
 const yargs = require('yargs');
 const getPort = require('get-port');
 const TestRunner = require('../src/testrunner');
@@ -7,6 +8,11 @@ const WebServer = require('../src/webserver');
 
 yargs
     .usage('Usage: $0 [options] [testName]')
+    .option('config', {
+        alias: 'c',
+        default: '.testrunner.config.json',
+        config: true
+    })
     .option('testDir', {
         alias: 'd',
         describe: 'Test directory name',
@@ -89,6 +95,10 @@ const setupTestRunner = options => {
 const params = yargs.argv;
 const { withoutServer, listen } = params;
 let { port } = params;
+
+if (params._[0]) {
+    params.spec = path.join('**', params._[0], params.spec);
+}
 
 let flow = Promise.resolve();
 
