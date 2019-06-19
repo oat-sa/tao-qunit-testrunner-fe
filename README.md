@@ -41,10 +41,12 @@ Requirement: `npm install nyc`
 | --reporter                 | Test result reporter (`json`, `basic` or custom path) | `string`  | `basic`                         |
 | --verbose, -v, -vv ...     | Verbose level                                         | `count`   | `0`                             |
 | --help -h                  | Display help                                          | `boolean` | `false`                         |
+|                            |                                                       |           |                                 |
 | _Webserver options_        |                                                       |           |                                 |
 | --listen, -l               | Do not run tests just start webserver                 | `boolean` | `false`                         |
 | --host                     | Webserver host                                        | `string`  | `127.0.0.1`                     |
 | --port, -p                 | Webserver port                                        | `number`  | `random free port`              |
+|                            |                                                       |           |                                 |
 | _Coverage options_         |                                                       |           |                                 |
 | --coverage, --cov          | Enable coverage measurement                           | `boolean` | `false`                         |
 | --coverage-instrument-spec | Coverage instrument pattern from `root`               | `glob`    | `src/**/*.js`                   |
