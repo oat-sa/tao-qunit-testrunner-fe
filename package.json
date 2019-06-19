@@ -11,7 +11,8 @@
         "test": "node ./bin/qunit-testrunner.js",
         "test:cov": "node ./bin/qunit-testrunner --cov",
         "coverage": "nyc report",
-        "coverage:html": "nyc report --reporter=lcov && open coverage/lcov-report/index.html"
+        "coverage:html": "nyc report --reporter=lcov && open coverage/lcov-report/index.html",
+        "coverage:empty": "npx nyc --instrument --include exampleSrc/**/*.js --all --silent echo"
     },
     "bin": {
         "qunit-testrunner": "./bin/qunit-testrunner.js"

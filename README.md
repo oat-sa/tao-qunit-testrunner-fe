@@ -84,8 +84,12 @@ In the config file, all command line argument can be defined. If an argument is 
 ```
 
 ### Coverage measurement description
+
 1. Source files are instrumented when they are requested. `--coverage-instrument-spec` defines the pattern.
 2. `QUnit.done` event listener is injected into test `.html` files. Injector injects into every files based on `--spec` pattern and puts event handler before `QUnit.start();`
 3. Handler post `__coverage__` result back to `/__coverage__/[original path]`, like `/test/foo/bar.html` -> `/__coverage__/foo/bar.html`.
 4. `istanbulCoverage` middleware collects coverage results and saves them into the directory provided by `--coverage-output-dir`. The file name is an md5 hash generated from coverage url.
 5. `nyc` can generate coverage report based on coverage measurement. `nyc report` or `nyc report --reporter=lcov`
+
+Small hack that generates empty coverage objects, so report will show totally uncovered files as well:
+`npx nyc --instrument --include <src glob> --all --silent echo`
