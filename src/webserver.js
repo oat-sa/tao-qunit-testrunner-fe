@@ -38,7 +38,7 @@ class WebServer {
             ...options
         };
         const middlewares = [
-            bodyParser.json(),
+            bodyParser.json({ size: '50mb' }),
             ...options.middlewares,
             serveStatic(this.options.root),
             serveIndex(this.options.root)

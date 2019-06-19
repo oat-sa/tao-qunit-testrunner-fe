@@ -79,8 +79,6 @@ yargs
         default: '.nyc_output'
     })
     .group(['coverage', 'coverage-instrument-glob', 'coverage-output-dir'], 'Coverage options:')
-    .implies('coverage-output-dir', 'coverage')
-    .implies('coverage-instrument-glob', 'coverage')
     .help('help')
     .alias('h', 'help');
 
