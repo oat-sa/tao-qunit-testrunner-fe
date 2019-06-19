@@ -73,19 +73,19 @@ module.exports = options => (req, res, next) => {
     const { root, instrumentSpec, spec } = options;
 
     switch (true) {
-        // instrument js files
-        case minimatch(req.url.substr(1), instrumentSpec):
-            const sourceFile = path.join(root, req.url);
-            instrumentFile(sourceFile).then(res.end.bind(res));
-            break;
-
         // save posted coverage info
         case req.method.toLowerCase() === 'post' && req.url.startsWith('/__coverage__'):
             const coverageInfo = req.body;
             const coverageName = req.url;
             saveCoverageInfo(coverageName, coverageInfo, options).then(() => {
-                res.end('{ "success" : true}');
+                res.end(JSON.stringify({ success: true }));
             });
+            break;
+
+        // instrument js files
+        case minimatch(req.url.substr(1), instrumentSpec):
+            const sourceFile = path.join(root, req.url);
+            instrumentFile(sourceFile).then(res.end.bind(res));
             break;
 
         // inject coverage info post script to test html

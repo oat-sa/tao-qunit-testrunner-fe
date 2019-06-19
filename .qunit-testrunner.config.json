@@ -1,6 +1,6 @@
 {
     "verbose": 1,
     "testDir": "exampleTest",
-    "coverage-instrument-glob": "exampleSrc/**/*.js",
+    "coverage-instrument-spec": "exampleSrc/**/*.js",
     "port": 8082
 }
