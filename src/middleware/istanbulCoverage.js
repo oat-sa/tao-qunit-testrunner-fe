@@ -29,7 +29,7 @@ const instrumentFile = async file => {
 const postCoverageInfo = function() {
     QUnit.done(function() {
         if (window.__coverage__) {
-            fetch('__coverage__', {
+            fetch(`/__coverage__${window.location.pathname}`, {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json'
@@ -69,18 +69,18 @@ const injectPostScript = file =>
         )
     );
 
-module.exports = (options, req, res, next) => {
-    const { root, sourceDir, spec } = options;
+module.exports = options => (req, res, next) => {
+    const { root, instrumentGlob, spec } = options;
 
     switch (true) {
-        // instrument js files from source directory
-        case req.url.endsWith('.js') && req.url.startsWith(`/${sourceDir}`):
+        // instrument js files
+        case minimatch(req.url.substr(1), instrumentGlob):
             const sourceFile = path.join(root, req.url);
             instrumentFile(sourceFile).then(res.end.bind(res));
             break;
 
         // save posted coverage info
-        case req.method.toLowerCase() === 'post' && req.url.endsWith('__coverage__'):
+        case req.method.toLowerCase() === 'post' && req.url.startsWith('/__coverage__'):
             const coverageInfo = req.body;
             const coverageName = req.url;
             saveCoverageInfo(coverageName, coverageInfo, options).then(() => {
@@ -89,7 +89,7 @@ module.exports = (options, req, res, next) => {
             break;
 
         // inject coverage info post script to test html
-        case req.url.endsWith('.html') && minimatch(req.url, spec):
+        case minimatch(req.url.substr(1), spec):
             const htmlFile = path.join(root, req.url);
             res.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
             injectPostScript(htmlFile).then(content => res.end(content));

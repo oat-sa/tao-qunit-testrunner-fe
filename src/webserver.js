@@ -39,33 +39,25 @@ class WebServer {
         };
         const middlewares = [
             bodyParser.json(),
-            ...this.resolveMiddlewares(this.options),
+            ...options.middlewares,
             serveStatic(this.options.root),
             serveIndex(this.options.root)
         ];
+
+        // create connect framework instance
         this._app = connect();
+
+        // apply middlewares
         middlewares.forEach(middleware => this._app.use(middleware));
+
+        // attach connect to http server
         this._server = new http.createServer(this._app);
-    }
-
-    resolveMiddlewares(options) {
-        const { root, middlewares } = options;
-        return (middlewares || []).map(middleware => {
-            if (typeof middleware === 'function') {
-                return middleware.bind(null, options);
-            }
-
-            const middlewareModule = require(middleware.startsWith('.')
-                ? path.resolve(root, middleware)
-                : `./middleware/${middleware}`);
-            return middlewareModule.bind(null, options);
-        });
     }
 
     listen(port, host) {
         const { root } = this.options;
         return new Promise((resolve, reject) => {
-            this._server.listen(port, err => {
+            this._server.listen(port, host, err => {
                 if (err) {
                     return reject(err);
                 }

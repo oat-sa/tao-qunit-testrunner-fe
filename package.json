@@ -4,13 +4,13 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test:keepAlive": "node ./bin/testrunner.js --listen",
-        "test": "node ./bin/testrunner.js",
+        "test:keepAlive": "node ./bin/qunit-testrunner.js --listen",
+        "test": "node ./bin/qunit-testrunner.js",
         "coverage": "nyc report",
         "coverage:html": "nyc report --reporter=lcov && open coverage/lcov-report/index.html"
     },
     "bin": {
-        "qunit-testrunner": "./bin/testrunner.js"
+        "qunit-testrunner": "./bin/qunit-testrunner.js"
     },
     "keywords": [],
     "author": "",
