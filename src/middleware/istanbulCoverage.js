@@ -1,6 +1,6 @@
 const im = require('istanbul-lib-instrument');
 const path = require('path');
-const { readFile, writeFile } = require('fs-extra');
+const { readFile, writeFile, mkdirp } = require('fs-extra');
 const crypto = require('crypto');
 const minimatch = require('minimatch');
 
@@ -48,45 +48,53 @@ const postCoverageInfo = function() {
  */
 const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
     const md5sum = crypto.createHash('md5').update(name);
-    return writeFile(path.join(root, coverageOutput, `${md5sum.digest('hex')}.json`), JSON.stringify(info), 'utf8');
+    const coverageOutputDir = path.join(root, coverageOutput);
+    return mkdirp(coverageOutputDir).then(
+        writeFile(path.join(coverageOutputDir, `${md5sum.digest('hex')}.json`), JSON.stringify(info), 'utf8')
+    );
 };
+
+/**
+ * Inject coverage post stript to the file content
+ * @param {string} file File path where post script should be injected
+ */
+const injectPostScript = file =>
+    readFile(file).then(content =>
+        content.toString().replace(
+            'QUnit.start();',
+            `
+            (${postCoverageInfo.toString()})();
+            QUnit.start();
+            `
+        )
+    );
+
 module.exports = (options, req, res, next) => {
     const { root, sourceDir, spec } = options;
 
-    // instrument js files from source directory
-    if (req.url.endsWith('.js') && req.url.startsWith(`/${sourceDir}`)) {
-        const file = path.join(root, req.url);
-        return instrumentFile(file).then(res.end.bind(res));
-    }
+    switch (true) {
+        // instrument js files from source directory
+        case req.url.endsWith('.js') && req.url.startsWith(`/${sourceDir}`):
+            const sourceFile = path.join(root, req.url);
+            instrumentFile(sourceFile).then(res.end.bind(res));
+            break;
 
-    // save posted coverage info
-    if (req.method.toLowerCase() === 'post' && req.url.endsWith('__coverage__')) {
-        const coverageInfo = req.body;
-        const coverageName = req.url;
-        saveCoverageInfo(coverageName, coverageInfo, options).then(() => {
-            res.end('{ "success" : true}');
-        });
-        return;
-    }
+        // save posted coverage info
+        case req.method.toLowerCase() === 'post' && req.url.endsWith('__coverage__'):
+            const coverageInfo = req.body;
+            const coverageName = req.url;
+            saveCoverageInfo(coverageName, coverageInfo, options).then(() => {
+                res.end('{ "success" : true}');
+            });
+            break;
 
-    // inject coverage info post script to test html
-    if (req.url.endsWith('.html') && minimatch(req.url, spec)) {
-        readFile(path.join(root, req.url)).then(content => {
+        // inject coverage info post script to test html
+        case req.url.endsWith('.html') && minimatch(req.url, spec):
+            const htmlFile = path.join(root, req.url);
             res.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
-            res.end(
-                content.toString().replace(
-                    '</body>',
-                    `
-                <script type="text/javascript">
-                (${postCoverageInfo.toString()})();
-                </script>
-                </body>
-            `
-                )
-            );
-        });
-        return;
+            injectPostScript(htmlFile).then(content => res.end(content));
+            break;
+        default:
+            next();
     }
-
-    next();
 };
