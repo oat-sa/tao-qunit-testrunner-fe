@@ -70,11 +70,11 @@ const injectPostScript = file =>
     );
 
 module.exports = options => (req, res, next) => {
-    const { root, instrumentGlob, spec } = options;
+    const { root, instrumentSpec, spec } = options;
 
     switch (true) {
         // instrument js files
-        case minimatch(req.url.substr(1), instrumentGlob):
+        case minimatch(req.url.substr(1), instrumentSpec):
             const sourceFile = path.join(root, req.url);
             instrumentFile(sourceFile).then(res.end.bind(res));
             break;

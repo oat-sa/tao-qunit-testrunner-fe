@@ -1,8 +1,11 @@
 {
     "name": "@oat-sa/tao-qunit-testrunner",
     "version": "0.1.0",
-    "description": "",
-    "main": "index.js",
+    "description": "TAO Frontend Unit & Integration Test Runner based on QUnit and Puppeteer",
+    "files": [
+        "bin",
+        "src"
+    ],
     "scripts": {
         "test:keepAlive": "node ./bin/qunit-testrunner.js --listen",
         "test": "node ./bin/qunit-testrunner.js",
@@ -12,9 +15,20 @@
     "bin": {
         "qunit-testrunner": "./bin/qunit-testrunner.js"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "keywords": [
+        "tao",
+        "test",
+        "qunit",
+        "testrunner"
+    ],
+    "license": "GPL-2.0",
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/oat-sa/tao-qunit-testrunner-fe.git"
+    },
     "dependencies": {
         "body-parser": "^1.19.0",
         "connect": "^3.7.0",

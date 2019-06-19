@@ -70,7 +70,7 @@ yargs
         describe: 'Enable coverage measurement',
         boolean: true
     })
-    .option('coverage-instrument-glob', {
+    .option('coverage-instrument-spec', {
         describe: 'Glob of source files that should be instrumented',
         default: 'src/**/*.js'
     })
@@ -78,7 +78,7 @@ yargs
         describe: 'Output of coverage info',
         default: '.nyc_output'
     })
-    .group(['coverage', 'coverage-instrument-glob', 'coverage-output-dir'], 'Coverage options:')
+    .group(['coverage', 'coverage-instrument-spec', 'coverage-output-dir'], 'Coverage options:')
     .help('help')
     .alias('h', 'help');
 
@@ -88,7 +88,7 @@ const setupWebServer = options => {
         port,
         root,
         coverage,
-        'coverage-instrument-glob': instrumentGlob,
+        'coverage-instrument-spec': instrumentSpec,
         'coverage-output-dir': coverageOutput,
         'api-mock': apiMock,
         spec
@@ -100,7 +100,7 @@ const setupWebServer = options => {
         middlewares.push(
             coverageMiddleware({
                 root,
-                instrumentGlob,
+                instrumentSpec,
                 spec,
                 coverageOutput
             })
