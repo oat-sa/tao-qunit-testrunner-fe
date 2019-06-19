@@ -1,41 +1,90 @@
 const im = require('istanbul-lib-instrument');
 const path = require('path');
-const fs = require('fs');
+const { readFile, writeFile } = require('fs-extra');
 const crypto = require('crypto');
+const minimatch = require('minimatch');
 
-const instrumentFile = file => {
+/**
+ * Instrument source with istanbul
+ * @param {string} file Path the file that should be instrumented
+ */
+const instrumentFile = async file => {
     const instrumenter = im.createInstrumenter();
 
-    return new Promise(resolve => {
-        fs.readFile(file, 'utf-8', (err, content) => {
-            console.log(`${file} : instrumented`);
-            resolve(instrumenter.instrumentSync(content, file));
-        });
+    const content = await readFile(file);
+    return new Promise(resolve =>
+        instrumenter.instrument(content.toString(), file, (err, code) => {
+            if (err) {
+                throw err;
+            }
+            resolve(code);
+        })
+    );
+};
+
+/**
+ * Posts coverage info to the server.
+ * Client code that will be injected.
+ */
+const postCoverageInfo = function() {
+    QUnit.done(function() {
+        if (window.__coverage__) {
+            fetch('__coverage__', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(__coverage__)
+            });
+        }
     });
 };
 
+/**
+ *
+ * @param {string} name Name of coverage, that will be hashed
+ * @param {object} info Coverage info
+ * @param {options} options testrunner options
+ */
+const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
+    const md5sum = crypto.createHash('md5').update(name);
+    return writeFile(path.join(root, coverageOutput, `${md5sum.digest('hex')}.json`), JSON.stringify(info), 'utf8');
+};
 module.exports = (options, req, res, next) => {
-    // console.log(req.url);
-    if (req.url.endsWith('.js') && req.url.indexOf('exampleSrc') !== -1) {
-        const file = path.join(options.root, req.url);
+    const { root, sourceDir, spec } = options;
+
+    // instrument js files from source directory
+    if (req.url.endsWith('.js') && req.url.startsWith(`/${sourceDir}`)) {
+        const file = path.join(root, req.url);
         return instrumentFile(file).then(res.end.bind(res));
     }
 
-    if (req.method.toLowerCase() === 'get' && req.url.indexOf('__coverage__') !== -1) {
-        const coverage = req.query.c;
-        const coverageName = Object.keys(coverage)[0];
-        const md5sum = crypto.createHash('md5').update(coverageName);
-        fs.writeFile(
-            path.join(options.root, '.nyc_output', `${md5sum.digest('hex')}.json`),
-            req.query.c,
-            'utf8',
-            function(err) {
-                if (err) {
-                    return next(err);
-                }
-                res.end('{ "success" : true}');
-            }
-        );
+    // save posted coverage info
+    if (req.method.toLowerCase() === 'post' && req.url.endsWith('__coverage__')) {
+        const coverageInfo = req.body;
+        const coverageName = req.url;
+        saveCoverageInfo(coverageName, coverageInfo, options).then(() => {
+            res.end('{ "success" : true}');
+        });
+        return;
+    }
+
+    // inject coverage info post script to test html
+    if (req.url.endsWith('.html') && minimatch(req.url, spec)) {
+        readFile(path.join(root, req.url)).then(content => {
+            res.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
+            res.end(
+                content.toString().replace(
+                    '</body>',
+                    `
+                <script type="text/javascript">
+                (${postCoverageInfo.toString()})();
+                </script>
+                </body>
+            `
+                )
+            );
+        });
         return;
     }
 

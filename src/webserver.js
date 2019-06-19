@@ -16,8 +16,12 @@
  * Copyright (c) 2019 (original work) Open Assessment Technologies SA ;
  */
 
-const HttpServer = require('http-server');
+const connect = require('connect');
+const http = require('http');
 const path = require('path');
+const serveStatic = require('serve-static');
+const serveIndex = require('serve-index');
+const bodyParser = require('body-parser');
 
 class WebServer {
     /**
@@ -33,8 +37,15 @@ class WebServer {
             cache: -1,
             ...options
         };
-        this.options.before = this.resolveMiddlewares(this.options);
-        this._server = new HttpServer.createServer(this.options);
+        const middlewares = [
+            bodyParser.json(),
+            ...this.resolveMiddlewares(this.options),
+            serveStatic(this.options.root),
+            serveIndex(this.options.root)
+        ];
+        this._app = connect();
+        middlewares.forEach(middleware => this._app.use(middleware));
+        this._server = new http.createServer(this._app);
     }
 
     resolveMiddlewares(options) {

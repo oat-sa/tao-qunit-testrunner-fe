@@ -4,8 +4,10 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test:keepAlive": "node ./bin/testrunner.js -l",
-        "test": "node ./bin/testrunner.js"
+        "test:keepAlive": "node ./bin/testrunner.js --listen",
+        "test": "node ./bin/testrunner.js",
+        "coverage": "nyc report",
+        "coverage:html": "nyc report --reporter=lcov && open coverage/lcov-report/index.html"
     },
     "bin": {
         "qunit-testrunner": "./bin/testrunner.js"
@@ -14,15 +16,20 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "body-parser": "^1.19.0",
+        "connect": "^3.7.0",
+        "fs-extra": "^8.0.1",
         "get-port": "^5.0.0",
         "glob": "^7.1.4",
         "glob-promise": "^3.4.0",
-        "http-server": "^0.11.1",
         "istanbul-lib-instrument": "^3.3.0",
+        "minimatch": "^3.0.4",
         "mocha": "^6.1.4",
         "node-qunit-puppeteer": "^1.0.12",
         "nyc": "^14.1.1",
         "promise-limit": "^2.7.0",
+        "serve-index": "^1.9.1",
+        "serve-static": "^1.14.1",
         "yargs": "^13.2.4"
     },
     "devDependencies": {

@@ -9,18 +9,6 @@
         <div id="qunit"></div>
         <div id="qunit-fixture"></div>
         <script type="text/javascript" src="../../node_modules/qunit/qunit/qunit.js"></script>
-        <script>
-            QUnit.done(function() {
-                fetch('/__coverage__?c=' + JSON.stringify(__coverage__));
-                // method: 'get',
-                // headers: {
-                //     'Content-Type': 'application/json'
-                // },
-                // type: 'json',
-                // query: JSON.stringify({ valami: 1 })
-                // });
-            });
-        </script>
         <script type="text/javascript" src="../../exampleSrc/calculator.js"></script>
         <script type="text/javascript" src="./test.js"></script>
     </body>

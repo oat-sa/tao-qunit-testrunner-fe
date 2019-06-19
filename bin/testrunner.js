@@ -62,16 +62,30 @@ yargs
         array: true
     })
     .group(['listen', 'host', 'port', 'middlewares'], 'Webserver options:')
+    .option('sourceDir', {
+        describe: 'Glob of source files dir that should be instrumented',
+        default: 'src'
+    })
+    .option('coverageOutput', {
+        describe: 'Output of coverage info',
+        default: '.nyc_output'
+    })
+    .group(['sourceDir', 'coverageOutput'], 'Coverage options:')
     .help('help')
     .alias('h', 'help');
 
 const setupWebServer = options => {
-    const { host, port, root, middlewares } = options;
+    const { host, port, root, middlewares, sourceDir, coverageOutput } = options;
 
-    const webServer = new WebServer({
-        root,
-        middlewares
-    });
+    const webServer = new WebServer(
+        options
+        //     {
+        //     root,
+        //     middlewares,
+        //     sourceDir,
+        //     coverageOutput
+        // }
+    );
 
     return webServer.listen(port, host);
 };

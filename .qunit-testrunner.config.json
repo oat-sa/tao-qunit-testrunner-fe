@@ -2,5 +2,6 @@
     "verbose": 1,
     "testDir": "exampleTest",
     "middlewares": ["istanbulCoverage"],
+    "sourceDir": "exampleSrc",
     "port": 8082
 }
