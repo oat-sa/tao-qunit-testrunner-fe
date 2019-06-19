@@ -18,10 +18,6 @@
 
 const connect = require('connect');
 const http = require('http');
-const path = require('path');
-const serveStatic = require('serve-static');
-const serveIndex = require('serve-index');
-const bodyParser = require('body-parser');
 
 class WebServer {
     /**
@@ -31,37 +27,24 @@ class WebServer {
      * @param cache Cache header of served files
      * @param middlewares Middleware list for webserver
      */
-    constructor(options = {}) {
-        this.options = {
-            root: process.cwd(),
-            cache: -1,
-            ...options
-        };
-        const middlewares = [
-            bodyParser.json({ limit: '50mb' }),
-            ...options.middlewares,
-            serveStatic(this.options.root),
-            serveIndex(this.options.root)
-        ];
-
+    constructor({ middlewares }) {
         // create connect framework instance
-        this._app = connect();
+        const app = connect();
 
         // apply middlewares
-        middlewares.forEach(middleware => this._app.use(middleware));
+        (middlewares || []).forEach(middleware => app.use(middleware));
 
         // attach connect to http server
-        this._server = new http.createServer(this._app);
+        this._server = new http.createServer(app);
     }
 
     listen(port, host) {
-        const { root } = this.options;
         return new Promise((resolve, reject) => {
             this._server.listen(port, host, err => {
                 if (err) {
                     return reject(err);
                 }
-                console.log(`Server is listening on http://${host}:${port}/ and serving ${root}`);
+                console.log(`Server is listening on http://${host}:${port}/`);
                 resolve();
             });
         });

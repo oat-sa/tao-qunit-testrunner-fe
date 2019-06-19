@@ -3,6 +3,9 @@
 const path = require('path');
 const yargs = require('yargs');
 const getPort = require('get-port');
+const serveStatic = require('serve-static');
+const serveIndex = require('serve-index');
+const bodyParser = require('body-parser');
 const TestRunner = require('../src/testrunner');
 const WebServer = require('../src/webserver');
 const coverageMiddleware = require('../src/middleware/istanbulCoverage');
@@ -91,9 +94,10 @@ const setupWebServer = options => {
         'coverage-instrument-spec': instrumentSpec,
         'coverage-output-dir': coverageOutput,
         'api-mock': apiMock,
-        spec
+        spec,
+        listen
     } = options;
-    const middlewares = [];
+    const middlewares = [bodyParser.json({ limit: '50mb' })];
 
     // add coverage middleware if measurement enabled
     if (coverage) {
@@ -107,12 +111,21 @@ const setupWebServer = options => {
         );
     }
 
+    // add api mock middleware
     if (apiMock) {
         middlewares.push(
             apiMockMiddleware({
                 root
             })
         );
+    }
+
+    // serve static files
+    middlewares.push(serveStatic(root));
+
+    // provide directory index if listen option set
+    if (listen) {
+        middlewares.push(serveIndex(root));
     }
 
     const webServer = new WebServer({
