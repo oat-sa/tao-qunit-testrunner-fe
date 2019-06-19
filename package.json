@@ -9,6 +9,7 @@
     "scripts": {
         "test:keepAlive": "node ./bin/qunit-testrunner.js --listen",
         "test": "node ./bin/qunit-testrunner.js",
+        "test:cov": "npx qunit-testrunner --cov",
         "coverage": "nyc report",
         "coverage:html": "nyc report --reporter=lcov && open coverage/lcov-report/index.html"
     },
