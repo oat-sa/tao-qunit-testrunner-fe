@@ -1,5 +1,23 @@
 #!/usr/bin/env node
 
+/**
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; under version 2
+ * of the License (non-upgradable).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * Copyright (c) 2019 (original work) Open Assessment Technologies SA ;
+ */
+
 const path = require('path');
 const yargs = require('yargs');
 const getPort = require('get-port');
@@ -51,8 +69,7 @@ yargs
         describe: 'Verbose level',
         count: true
     })
-    .option('listen', {
-        alias: 'l',
+    .option('keepalive', {
         describe: 'Keepalive webserver',
         default: false,
         boolean: true
@@ -66,7 +83,7 @@ yargs
         describe: 'Webserver port',
         number: true
     })
-    .group(['listen', 'host', 'port'], 'Webserver options:')
+    .group(['keepalive', 'host', 'port'], 'Webserver options:')
     .option('coverage', {
         alias: 'cov',
         default: false,
@@ -95,7 +112,7 @@ const setupWebServer = options => {
         'coverage-output-dir': coverageOutput,
         'api-mock': apiMock,
         spec,
-        listen
+        keepalive
     } = options;
     const middlewares = [bodyParser.json({ limit: '50mb' })];
 
@@ -123,8 +140,8 @@ const setupWebServer = options => {
     // serve static files
     middlewares.push(serveStatic(root));
 
-    // provide directory index if listen option set
-    if (listen) {
+    // provide directory index if keepalive option set
+    if (keepalive) {
         middlewares.push(serveIndex(root));
     }
 
@@ -152,7 +169,7 @@ const setupTestRunner = options => {
 };
 
 const params = yargs.argv;
-const { withoutServer, listen } = params;
+const { withoutServer, keepalive } = params;
 let { port } = params;
 
 if (params._[0]) {
@@ -170,10 +187,11 @@ if (!withoutServer) {
     flow = flow.then(() => setupWebServer(params));
 }
 
-if (!listen) {
+if (!keepalive) {
     flow = flow
         .then(() => setupTestRunner(params))
         .then(isSuccess => {
             process.exit(isSuccess ? 0 : 1);
-        });
+        })
+        .catch(e => console.error(e));
 }

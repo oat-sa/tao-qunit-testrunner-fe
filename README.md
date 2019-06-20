@@ -43,7 +43,7 @@ Requirement: `npm install nyc`
 | --help -h                  | Display help                                          | `boolean` | `false`                         |
 |                            |                                                       |           |                                 |
 | _Webserver options_        |                                                       |           |                                 |
-| --listen, -l               | Do not run tests just start webserver                 | `boolean` | `false`                         |
+| --keepalive                | Do not run tests just start webserver                 | `boolean` | `false`                         |
 | --host                     | Webserver host                                        | `string`  | `127.0.0.1`                     |
 | --port, -p                 | Webserver port                                        | `number`  | `random free port`              |
 |                            |                                                       |           |                                 |
@@ -76,7 +76,7 @@ In the config file, all command line argument can be defined. If an argument is 
 ```
 "scripts": {
   "test": "npx qunit-testrunner",
-  "test:keepAlive": "npx qunit-testrunner -l",
+  "test:keepAlive": "npx qunit-testrunner --keepalive",
   "test:cov": "npx qunit-testrunner --cov",
   "coverage": "nyc report",
   "coverage:html": "nyc report --reporter=lcov && open coverage/lcov-report/index.html"

@@ -7,7 +7,7 @@
         "src"
     ],
     "scripts": {
-        "test:keepAlive": "node ./bin/qunit-testrunner.js --listen",
+        "test:keepAlive": "node ./bin/qunit-testrunner.js --keepalive",
         "test": "node ./bin/qunit-testrunner.js",
         "test:cov": "node ./bin/qunit-testrunner --cov",
         "coverage": "nyc report",

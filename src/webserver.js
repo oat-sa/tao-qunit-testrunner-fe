@@ -19,36 +19,46 @@
 const connect = require('connect');
 const http = require('http');
 
-class WebServer {
-    /**
-     *
-     * @param options Webserver options
-     * @param options.root Root of webserver, default is current working directory
-     * @param cache Cache header of served files
-     * @param middlewares Middleware list for webserver
-     */
-    constructor({ middlewares }) {
-        // create connect framework instance
-        const app = connect();
+/**
+ * Web server factory
+ * @param {object} options Webserver options
+ * @param {function[]} options.middlewares Middleware list for webserver
+ */
+module.exports = function({ middlewares }) {
+	/**
+	 * Connect framework instance
+	 * @type {createServer.Server}
+	 * @private
+	 */
+	const app = connect();
 
-        // apply middlewares
-        (middlewares || []).forEach(middleware => app.use(middleware));
+	// apply middlewares
+	(middlewares || []).forEach(middleware => app.use(middleware));
 
-        // attach connect to http server
-        this._server = new http.createServer(app);
-    }
+	/**
+	 * Http server instance connected with connect framework instance
+	 * @type {Server}
+	 * @private
+	 */
+	const server = new http.createServer(app);
 
-    listen(port, host) {
-        return new Promise((resolve, reject) => {
-            this._server.listen(port, host, err => {
-                if (err) {
-                    return reject(err);
-                }
-                console.log(`Server is listening on http://${host}:${port}/`);
-                resolve();
-            });
-        });
-    }
-}
-
-module.exports = WebServer;
+	return {
+		/**
+		 * Start webserver
+		 * @param {number} port Port where listen
+		 * @param {string} host Host where host
+		 * @returns {Promise<void>} Promise about webserver listen
+		 */
+		listen(port, host) {
+			return new Promise((resolve, reject) => {
+				server.listen(port, host, err => {
+					if (err) {
+						return reject(err);
+					}
+					console.log(`Server is listening on http://${host}:${port}/`);
+					resolve();
+				});
+			});
+		}
+	};
+};

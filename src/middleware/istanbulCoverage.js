@@ -1,3 +1,21 @@
+/**
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; under version 2
+ * of the License (non-upgradable).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * Copyright (c) 2019 (original work) Open Assessment Technologies SA ;
+ */
+
 const im = require('istanbul-lib-instrument');
 const path = require('path');
 const { readFile, writeFile, mkdirp } = require('fs-extra');
@@ -7,6 +25,7 @@ const minimatch = require('minimatch');
 /**
  * Instrument source with istanbul
  * @param {string} file Path the file that should be instrumented
+ * @returns {Promise<string>} resolves with the instrumented code
  */
 const instrumentFile = async file => {
     const instrumenter = im.createInstrumenter();
@@ -34,17 +53,18 @@ const postCoverageInfo = function() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(__coverage__)
+                body: JSON.stringify(window.__coverage__)
             });
         }
     });
 };
 
 /**
- *
+ * Save coverage info into disk using md5 hased filename
  * @param {string} name Name of coverage, that will be hashed
  * @param {object} info Coverage info
  * @param {options} options testrunner options
+ * @returns {Promise<void>} Promise of coverage data is saved
  */
 const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
     const md5sum = crypto.createHash('md5').update(name);
@@ -58,7 +78,7 @@ const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
  * Inject coverage post stript to the file content
  * @param {string} file File path where post script should be injected
  */
-const injectPostScript = file =>
+const injectPostScript = (file) =>
     readFile(file).then(content =>
         content.toString().replace(
             'QUnit.start();',
@@ -69,6 +89,10 @@ const injectPostScript = file =>
         )
     );
 
+/**
+ * Exports a middleware that instruments source files, inject coverage info post script
+ * and saves received coverage info to the disk.
+ */
 module.exports = options => (req, res, next) => {
     const { root, instrumentSpec, spec } = options;
 
@@ -79,20 +103,20 @@ module.exports = options => (req, res, next) => {
             const coverageName = req.url;
             saveCoverageInfo(coverageName, coverageInfo, options).then(() => {
                 res.end(JSON.stringify({ success: true }));
-            });
+            }).catch(next);
             break;
 
         // instrument js files
         case minimatch(req.url.substr(1), instrumentSpec):
             const sourceFile = path.join(root, req.url);
-            instrumentFile(sourceFile).then(res.end.bind(res));
+            instrumentFile(sourceFile).then(res.end.bind(res)).catch(next);
             break;
 
         // inject coverage info post script to test html
         case minimatch(req.url.substr(1), spec):
             const htmlFile = path.join(root, req.url);
             res.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
-            injectPostScript(htmlFile).then(content => res.end(content));
+            injectPostScript(htmlFile).then(content => res.end(content)).catch(next);
             break;
         default:
             next();
