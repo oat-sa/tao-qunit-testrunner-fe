@@ -27,18 +27,16 @@ const minimatch = require('minimatch');
  * @param {string} file Path the file that should be instrumented
  * @returns {Promise<string>} resolves with the instrumented code
  */
-const instrumentFile = async file => {
+const instrumentFile = async (file) => {
     const instrumenter = im.createInstrumenter();
 
     const content = await readFile(file);
-    return new Promise(resolve =>
-        instrumenter.instrument(content.toString(), file, (err, code) => {
-            if (err) {
-                throw err;
-            }
-            resolve(code);
-        })
-    );
+    return new Promise(resolve => instrumenter.instrument(content.toString(), file, (err, code) => {
+        if (err) {
+            throw err;
+        }
+        resolve(code);
+    }));
 };
 
 /**
@@ -77,30 +75,33 @@ const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
 /**
  * Inject coverage post stript to the file content
  * @param {string} file File path where post script should be injected
+ * @returns {Promise<void>} Promise of script injected
  */
-const injectPostScript = (file) =>
-    readFile(file).then(content =>
-        content.toString().replace(
-            'QUnit.start();',
-            `
-            (${postCoverageInfo.toString()})();
-            QUnit.start();
-            `
-        )
+const injectPostScript = (file) => readFile(file).then(function(content) {
+    content.toString().replace(
+        'QUnit.start();',
+        `
+        (${postCoverageInfo.toString()})();
+        QUnit.start();
+        `
     );
+});
 
 /**
  * Exports a middleware that instruments source files, inject coverage info post script
  * and saves received coverage info to the disk.
+ * @param {object} options istanbul coverage options
+ * @returns {function} Istanbul coverage middleware
  */
 module.exports = options => (req, res, next) => {
     const { root, instrumentSpec, spec } = options;
+    let coverageInfo, coverageName, sourceFile, htmlFile;
 
     switch (true) {
         // save posted coverage info
         case req.method.toLowerCase() === 'post' && req.url.startsWith('/__coverage__'):
-            const coverageInfo = req.body;
-            const coverageName = req.url;
+            coverageInfo = req.body;
+            coverageName = req.url;
             saveCoverageInfo(coverageName, coverageInfo, options).then(() => {
                 res.end(JSON.stringify({ success: true }));
             }).catch(next);
@@ -108,13 +109,13 @@ module.exports = options => (req, res, next) => {
 
         // instrument js files
         case minimatch(req.url.substr(1), instrumentSpec):
-            const sourceFile = path.join(root, req.url);
+            sourceFile = path.join(root, req.url);
             instrumentFile(sourceFile).then(res.end.bind(res)).catch(next);
             break;
 
         // inject coverage info post script to test html
         case minimatch(req.url.substr(1), spec):
-            const htmlFile = path.join(root, req.url);
+            htmlFile = path.join(root, req.url);
             res.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
             injectPostScript(htmlFile).then(content => res.end(content)).catch(next);
             break;

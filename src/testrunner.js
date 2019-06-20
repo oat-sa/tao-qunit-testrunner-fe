@@ -33,97 +33,94 @@ const limit = promiseLimit(process.env.PARALLEL_TESTS || 5);
  * @param {string} options.host Hostname of test web server
  * @param {number} options.port Port of test web server
  * @param {number} options.verbose Verbose level
+ * @returns {function} Testrunner
  */
 module.exports = function testRunner(options) {
-	const { root, reporter, spec, testDir, host, port, verbose } = options;
+    const { root, reporter, spec, testDir, host, port, verbose } = options;
 
-	/**
-	 * Module that makes report from tests results
-	 * @type {object}
-	 * @private
-	 */
-	const reporterModule = require(reporter.startsWith('.') ? path.resolve(root, reporter) : `./reporter/${reporter}`);
+    /**
+     * Module that makes report from tests results
+     * @type {object}
+     * @private
+     */
+    const reporterModule = require(reporter.startsWith('.') ? path.resolve(root, reporter) : `./reporter/${reporter}`);
 
-	return {
-		/**
-		 * Collect test file list
-		 * @returns {Promise<string[]>} Collected test files
-		 */
-		async collectTests() {
-			const files = await glob(path.join(root, testDir, spec));
-			return files.map(file => path.relative(root, file));
-		},
+    return {
+        /**
+         * Collect test file list
+         * @returns {Promise<string[]>} Collected test files
+         */
+        async collectTests() {
+            const files = await glob(path.join(root, testDir, spec));
+            return files.map(file => path.relative(root, file));
+        },
 
-		/**
-		 * Run provided test
-		 * @param {string} testPath Path of test file
-		 * @returns {Promise<object>} Promise resolved with test result
-		 */
-		runTest(testPath) {
-			const qunitArgs = {
-				// Path to qunit tests suite
-				targetUrl: `http://${host}:${port}/${testPath}`,
-				// (optional, 30000 by default) global timeout for the tests suite
-				timeout: 30000,
-				// (optional, false by default) should the browser console be redirected or not
-				redirectConsole: false,
-				puppeteerArgs: [
-					'--no-sandbox',
-					'--disable-gpu',
-					'--disable-popup-blocking',
-					'--autoplay-policy=no-user-gesture-required'
-				]
-			};
+        /**
+         * Run provided test
+         * @param {string} testPath Path of test file
+         * @returns {Promise<object>} Promise resolved with test result
+         */
+        runTest(testPath) {
+            const qunitArgs = {
+                // Path to qunit tests suite
+                targetUrl: `http://${host}:${port}/${testPath}`,
+                // (optional, 30000 by default) global timeout for the tests suite
+                timeout: 30000,
+                // (optional, false by default) should the browser console be redirected or not
+                redirectConsole: false,
+                puppeteerArgs: [
+                    '--no-sandbox',
+                    '--disable-gpu',
+                    '--disable-popup-blocking',
+                    '--autoplay-policy=no-user-gesture-required'
+                ]
+            };
 
-			return runQunitPuppeteer(qunitArgs).then(result => {
-				result.path = testPath;
-				return result;
-			});
-		},
+            return runQunitPuppeteer(qunitArgs).then(result => {
+                result.path = testPath;
+                return result;
+            });
+        },
 
-		/**
-		 * Calls reporter with test result
-		 * @param {object} result Test result
-		 */
-		onTestDone(result) {
-			if (reporterModule) {
-				reporterModule.onTestDone(result, verbose);
-			}
-		},
+        /**
+         * Calls reporter with test result
+         * @param {object} result Test result
+         */
+        onTestDone(result) {
+            if (reporterModule) {
+                reporterModule.onTestDone(result, verbose);
+            }
+        },
 
-		/**
-		 * Inform reporter about all test finished
-		 */
-		onDone() {
-			if (reporterModule) {
-				reporterModule.onDone(verbose);
-			}
-		},
+        /**
+         * Inform reporter about all test finished
+         */
+        onDone() {
+            if (reporterModule) {
+                reporterModule.onDone(verbose);
+            }
+        },
 
-		/**
-		 * Starts testing
-		 * @returns {Promise<boolean>} Has failed test
-		 */
-		async start() {
-			const tests = await this.collectTests();
-			let hasFailed = false;
-			return Promise.all(
-				tests.map(test =>
-					limit(() =>
-						this.runTest(test).then(result => {
-							if (result.stats.failed) {
-								hasFailed = true;
-							}
-							this.onTestDone(result);
-						})
-					)
-				)
-			)
-				.catch(e => console.error(e))
-				.then(() => {
-					this.onDone();
-				})
-				.then(() => !hasFailed);
-		}
-	};
+        /**
+         * Starts testing
+         * @returns {Promise<boolean>} Has failed test
+         */
+        async start() {
+            const tests = await this.collectTests();
+            let hasFailed = false;
+            return Promise.all(
+                tests.map(test => limit(() => this.runTest(test).then(result => {
+                    if (result.stats.failed) {
+                        hasFailed = true;
+                    }
+                    this.onTestDone(result);
+                })))
+            )
+                .catch(e => console.error(e)) // eslint-disable-line no-console
+                .then(() => {
+                    this.onDone();
+                })
+                .then(() => !hasFailed);
+        }
+    };
 };

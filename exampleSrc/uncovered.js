@@ -1,3 +1,3 @@
-function uncovered() {
+window.uncovered = function() {
     return 42;
-}
+};

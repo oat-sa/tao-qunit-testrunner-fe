@@ -1,1 +1,1 @@
-QUnit.test('foo', function(assert) {});
+QUnit.test('foo', function() {});

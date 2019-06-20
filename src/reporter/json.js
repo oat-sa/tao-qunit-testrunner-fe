@@ -16,6 +16,8 @@
  * Copyright (c) 2019 (original work) Open Assessment Technologies SA ;
  */
 
+/* eslint-disable no-console */
+
 const testsResult = [];
 module.exports = {
     onTestDone(result) {

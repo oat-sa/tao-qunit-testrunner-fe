@@ -21,18 +21,23 @@ const path = require('path');
 
 /**
  * Middleware that mock API response
+ * @param {object} options API Mock middleware options
  * @param {string} options.root Path where files should be found
+ * @returns {function} API Mock middleware
  */
-module.exports = ({ root }) => (req, res, next) => {
-    if (req.method.toLowerCase() === 'post' && req.url.endsWith('.json')) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        fs.readFile(path.join(root, req.url), (err, data) => {
-            if (err) {
-                throw err;
-            }
-            res.end(data.toString());
-        });
-    } else {
-        next();
-    }
+module.exports = function(options) {
+    const { root } = options;
+    return function(req, res, next) {
+        if (req.method.toLowerCase() === 'post' && req.url.endsWith('.json')) {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            fs.readFile(path.join(root, req.url), (err, data) => {
+                if (err) {
+                    throw err;
+                }
+                res.end(data.toString());
+            });
+        } else {
+            next();
+        }
+    };
 };

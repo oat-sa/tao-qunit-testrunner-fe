@@ -12,7 +12,8 @@
         "test:cov": "node ./bin/qunit-testrunner --cov",
         "coverage": "nyc report",
         "coverage:html": "nyc report --reporter=lcov && open coverage/lcov-report/index.html",
-        "coverage:empty": "npx nyc --instrument --include exampleSrc/**/*.js --all --silent echo"
+        "coverage:empty": "npx nyc --instrument --include exampleSrc/**/*.js --all --silent echo",
+        "lint": "eslint src exampleSrc exampleTest"
     },
     "bin": {
         "qunit-testrunner": "./bin/qunit-testrunner.js"
@@ -47,7 +48,10 @@
         "yargs": "^13.2.4"
     },
     "devDependencies": {
-        "qunit": "^2.9.2",
-        "nyc": "^14.1.1"
+        "eslint": "^5.16.0",
+        "eslint-plugin-es": "^1.4.0",
+        "eslint-plugin-jsdoc": "^8.3.0",
+        "nyc": "^14.1.1",
+        "qunit": "^2.9.2"
     }
 }
