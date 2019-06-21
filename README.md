@@ -79,7 +79,7 @@ In the config file, all command line argument can be defined. If an argument is 
   "test:keepAlive": "npx qunit-testrunner --keepalive",
   "test:cov": "npx qunit-testrunner --cov",
   "coverage": "nyc report",
-  "coverage:html": "nyc report --reporter=lcov && open coverage/lcov-report/index.html"
+  "coverage:html": "nyc report --reporter=lcov && open-cli coverage/lcov-report/index.html"
 }
 ```
 
