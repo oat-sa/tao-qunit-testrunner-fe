@@ -191,7 +191,10 @@ if (!keepalive) {
     flow = flow
         .then(() => setupTestRunner(params))
         .then(isSuccess => {
-            process.exit(isSuccess ? 0 : 1);
+            // give time to instanbulCoverage middleware to write out coverage data
+            setTimeout(() => {
+                process.exit(isSuccess ? 0 : 1);
+            }, 1000);
         });
 }
 
