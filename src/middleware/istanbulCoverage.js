@@ -36,8 +36,7 @@ const instrumentFile = async file => {
             throw err;
         }
         resolve(code);
-    })
-    );
+    }));
 };
 
 /**
@@ -47,7 +46,7 @@ const instrumentFile = async file => {
 const postCoverageInfo = function() {
     QUnit.done(function() {
         if (window.__coverage__) {
-            fetch(`/__coverage__${window.location.pathname}`, {
+            return fetch(`/__coverage__${window.location.pathname}`, {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json'
@@ -83,7 +82,7 @@ const injectPostScript = file => readFile(file).then(function(content) {
         'QUnit.start();',
         `
         (${postCoverageInfo.toString()})();
-                  QUnit.start();
+        QUnit.start();
         `
     );
 });

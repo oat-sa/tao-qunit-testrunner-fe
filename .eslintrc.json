@@ -13,7 +13,7 @@
         "sourceType": "module",
         "ecmaVersion": 2017
     },
-    "extends": ["eslint:recommended", "prettier"],
+    "extends": ["eslint:recommended"],
     "rules": {
         "array-bracket-newline": ["warn", "consistent"],
         "arrow-body-style": ["error", "as-needed"],
