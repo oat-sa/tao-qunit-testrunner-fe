@@ -1,0 +1,58 @@
+{
+    "name": "@oat-sa/tao-qunit-testrunner",
+    "version": "0.1.0",
+    "description": "TAO Frontend Unit & Integration Test Runner based on QUnit and Puppeteer",
+    "files": [
+        "bin",
+        "src"
+    ],
+    "scripts": {
+        "test:keepAlive": "node ./bin/qunit-testrunner.js --keepalive",
+        "test": "node ./bin/qunit-testrunner.js",
+        "test:cov": "node ./bin/qunit-testrunner --cov",
+        "coverage": "nyc report",
+        "coverage:html": "nyc report --reporter=lcov && open-cli coverage/lcov-report/index.html",
+        "coverage:empty": "npx nyc --instrument --include exampleSrc/**/*.js --all --silent echo",
+        "lint": "eslint src exampleSrc exampleTest bin"
+    },
+    "bin": {
+        "qunit-testrunner": "./bin/qunit-testrunner.js"
+    },
+    "keywords": [
+        "tao",
+        "test",
+        "qunit",
+        "testrunner"
+    ],
+    "license": "GPL-2.0",
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/oat-sa/tao-qunit-testrunner-fe.git"
+    },
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "connect": "^3.7.0",
+        "fs-extra": "^8.0.1",
+        "get-port": "^5.0.0",
+        "glob": "^7.1.4",
+        "glob-promise": "^3.4.0",
+        "istanbul-lib-instrument": "^3.3.0",
+        "minimatch": "^3.0.4",
+        "node-qunit-puppeteer": "^1.0.12",
+        "promise-limit": "^2.7.0",
+        "serve-index": "^1.9.1",
+        "serve-static": "^1.14.1",
+        "yargs": "^13.2.4"
+    },
+    "devDependencies": {
+        "eslint": "^5.16.0",
+        "eslint-plugin-es": "^1.4.0",
+        "eslint-plugin-jsdoc": "^8.3.0",
+        "nyc": "^14.1.1",
+        "open-cli": "^5.0.0",
+        "qunit": "^2.9.2"
+    }
+}
