@@ -44,7 +44,7 @@ const instrumentFile = async file => {
  * Client code that will be injected.
  */
 const postCoverageInfo = function() {
-    QUnit.done(function() {
+    QUnit.on('runEnd',function() {
         if (window.__coverage__) {
             return fetch(`/__coverage__${window.location.pathname}`, {
                 method: 'post',
