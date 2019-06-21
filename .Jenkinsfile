@@ -24,10 +24,6 @@ pipeline {
                         script: 'npm install'
                     )
                     sh(
-                        label: 'Show eslint errors'
-                        script: 'npm run lint || true'
-                    )
-                    sh(
                         label : 'Run frontend tests',
                         script: 'npm run test:cov calculator'
                     )
