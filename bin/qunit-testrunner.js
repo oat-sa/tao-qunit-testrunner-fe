@@ -24,8 +24,8 @@ const getPort = require('get-port');
 const serveStatic = require('serve-static');
 const serveIndex = require('serve-index');
 const bodyParser = require('body-parser');
-const TestRunner = require('../src/testrunner');
-const WebServer = require('../src/webserver');
+const testRunnerFactory = require('../src/testrunner');
+const webServerFactory = require('../src/webserver');
 const coverageMiddleware = require('../src/middleware/istanbulCoverage');
 const apiMockMiddleware = require('../src/middleware/apiMock');
 
@@ -145,7 +145,7 @@ const setupWebServer = options => {
         middlewares.push(serveIndex(root));
     }
 
-    const webServer = new WebServer({
+    const webServer = webServerFactory({
         root,
         middlewares
     });
@@ -155,7 +155,7 @@ const setupWebServer = options => {
 
 const setupTestRunner = options => {
     const { testDir, spec, root, host, port, reporter, verbose } = options;
-    const testRunner = new TestRunner({
+    const testRunner = testRunnerFactory({
         testDir,
         spec,
         root,
@@ -180,8 +180,8 @@ let flow = Promise.resolve();
 
 if (!withoutServer) {
     if (!port) {
-        flow = flow.then(getPort).then(port => {
-            params.port = port;
+        flow = flow.then(getPort).then(freePort => {
+            params.port = freePort;
         });
     }
     flow = flow.then(() => setupWebServer(params));
@@ -192,6 +192,7 @@ if (!keepalive) {
         .then(() => setupTestRunner(params))
         .then(isSuccess => {
             process.exit(isSuccess ? 0 : 1);
-        })
-        .catch(e => console.error(e));
+        });
 }
+
+flow.catch(e => console.error(e)); // eslint-disable-line no-console

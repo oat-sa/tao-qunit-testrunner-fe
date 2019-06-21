@@ -27,7 +27,7 @@ const minimatch = require('minimatch');
  * @param {string} file Path the file that should be instrumented
  * @returns {Promise<string>} resolves with the instrumented code
  */
-const instrumentFile = async (file) => {
+const instrumentFile = async file => {
     const instrumenter = im.createInstrumenter();
 
     const content = await readFile(file);
@@ -36,7 +36,8 @@ const instrumentFile = async (file) => {
             throw err;
         }
         resolve(code);
-    }));
+    })
+    );
 };
 
 /**
@@ -67,9 +68,9 @@ const postCoverageInfo = function() {
 const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
     const md5sum = crypto.createHash('md5').update(name);
     const coverageOutputDir = path.join(root, coverageOutput);
-    return mkdirp(coverageOutputDir).then(
-        writeFile(path.join(coverageOutputDir, `${md5sum.digest('hex')}.json`), JSON.stringify(info), 'utf8')
-    );
+    return mkdirp(coverageOutputDir).then(function() {
+        return writeFile(path.join(coverageOutputDir, `${md5sum.digest('hex')}.json`), JSON.stringify(info), 'utf8');
+    });
 };
 
 /**
@@ -77,12 +78,12 @@ const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
  * @param {string} file File path where post script should be injected
  * @returns {Promise<void>} Promise of script injected
  */
-const injectPostScript = (file) => readFile(file).then(function(content) {
-    content.toString().replace(
+const injectPostScript = file => readFile(file).then(function(content) {
+    return content.toString().replace(
         'QUnit.start();',
         `
         (${postCoverageInfo.toString()})();
-        QUnit.start();
+                  QUnit.start();
         `
     );
 });
@@ -102,22 +103,28 @@ module.exports = options => (req, res, next) => {
         case req.method.toLowerCase() === 'post' && req.url.startsWith('/__coverage__'):
             coverageInfo = req.body;
             coverageName = req.url;
-            saveCoverageInfo(coverageName, coverageInfo, options).then(() => {
-                res.end(JSON.stringify({ success: true }));
-            }).catch(next);
+            saveCoverageInfo(coverageName, coverageInfo, options)
+                .then(() => {
+                    res.end(JSON.stringify({ success: true }));
+                })
+                .catch(next);
             break;
 
         // instrument js files
         case minimatch(req.url.substr(1), instrumentSpec):
             sourceFile = path.join(root, req.url);
-            instrumentFile(sourceFile).then(res.end.bind(res)).catch(next);
+            instrumentFile(sourceFile)
+                .then(res.end.bind(res))
+                .catch(next);
             break;
 
         // inject coverage info post script to test html
         case minimatch(req.url.substr(1), spec):
             htmlFile = path.join(root, req.url);
             res.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
-            injectPostScript(htmlFile).then(content => res.end(content)).catch(next);
+            injectPostScript(htmlFile)
+                .then(content => res.end(content))
+                .catch(next);
             break;
         default:
             next();
