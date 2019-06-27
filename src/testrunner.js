@@ -20,8 +20,19 @@ const glob = require('glob-promise');
 const path = require('path');
 const { runQunitPuppeteer } = require('node-qunit-puppeteer');
 const promiseLimit = require('promise-limit');
+const chalk = require('chalk');
 
 const limit = promiseLimit(process.env.PARALLEL_TESTS || 5);
+
+/**
+ * Custom error for QUnit runner errors
+ */
+class QUnitRunnerError extends Error { // eslint-disable-line es/no-classes
+    constructor(testFilePath, error) {
+        super(error.message || error);
+        this.path = testFilePath;
+    }
+}
 
 /**
  * Test runner factory
@@ -76,10 +87,14 @@ module.exports = function testRunner(options) {
                 ]
             };
 
-            return runQunitPuppeteer(qunitArgs).then(result => {
-                result.path = testPath;
-                return result;
-            });
+            return runQunitPuppeteer(qunitArgs)
+                .then(result => {
+                    result.path = testPath;
+                    return result;
+                })
+                .catch(e => {
+                    throw new QUnitRunnerError(testPath, e);
+                });
         },
 
         /**
@@ -116,7 +131,12 @@ module.exports = function testRunner(options) {
                     this.onTestDone(result);
                 })))
             )
-                .catch(e => console.error(e)) // eslint-disable-line no-console
+                .catch(e => {
+                    if (e.path) {
+                        console.error(chalk.redBright(e.path)); // eslint-disable-line no-console
+                    }
+                    console.error(e); // eslint-disable-line no-console
+                })
                 .then(() => {
                     this.onDone();
                 })

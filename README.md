@@ -63,7 +63,7 @@ In the config file, all command line argument can be defined. If an argument is 
   "verbose": 1,
   "testDir": "exampleTest",
   "coverage": true,
-  "coverage-instrument-glob": "exampleSrc/**/*.js",
+  "coverage-instrument-spec": "exampleSrc/**/*.js",
   "port": 8082
 }
 
