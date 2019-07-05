@@ -78,7 +78,7 @@ module.exports = function testRunner(options) {
                 // (optional, 30000 by default) global timeout for the tests suite
                 timeout: 30000,
                 // (optional, false by default) should the browser console be redirected or not
-                redirectConsole: false,
+                redirectConsole: process.env.REDIRECT_CONSOLE === 'true',
                 puppeteerArgs: [
                     '--no-sandbox',
                     '--disable-gpu',
@@ -129,7 +129,9 @@ module.exports = function testRunner(options) {
                         hasFailed = true;
                     }
                     this.onTestDone(result);
-                })))
+                })
+                )
+                )
             )
                 .catch(e => {
                     if (e.path) {

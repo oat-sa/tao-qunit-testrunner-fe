@@ -44,7 +44,7 @@ const instrumentFile = async file => {
  * Client code that will be injected.
  */
 const postCoverageInfo = function() {
-    QUnit.on('runEnd',function() {
+    const sendCoverageData = () => {
         if (window.__coverage__) {
             return fetch(`/__coverage__${window.location.pathname}`, {
                 method: 'post',
@@ -54,6 +54,23 @@ const postCoverageInfo = function() {
                 body: JSON.stringify(window.__coverage__)
             });
         }
+        return Promise.resolve();
+    };
+
+    // because of node-qunit-pupeeter has defineProperty
+    const propertyDescriptor = Object.getOwnPropertyDescriptor(window, 'QUnit');
+    const originalSetter = propertyDescriptor && propertyDescriptor.set;
+    let qUnit;
+    Object.defineProperty(window, 'QUnit', {
+        get : () => qUnit,
+        set: (value) => {
+            qUnit = value;
+            QUnit.done(sendCoverageData);
+            if (originalSetter) {
+                originalSetter(value);
+            }
+        },
+        configurable: true
     });
 };
 
@@ -79,10 +96,12 @@ const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
  */
 const injectPostScript = file => readFile(file).then(function(content) {
     return content.toString().replace(
-        'QUnit.start();',
+        '<head>',
         `
+        <head>
+        <script>
         (${postCoverageInfo.toString()})();
-        QUnit.start();
+        </script>
         `
     );
 });

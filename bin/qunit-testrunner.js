@@ -190,12 +190,7 @@ if (!withoutServer) {
 if (!keepalive) {
     flow = flow
         .then(() => setupTestRunner(params))
-        .then(isSuccess => {
-            // give time to instanbulCoverage middleware to write out coverage data
-            setTimeout(() => {
-                process.exit(isSuccess ? 0 : 1);
-            }, 1000);
-        });
+        .then(isSuccess => process.exit(isSuccess ? 0 : 1));
 }
 
 flow.catch(e => console.error(e)); // eslint-disable-line no-console
