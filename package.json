@@ -1,6 +1,6 @@
 {
     "name": "@oat-sa/tao-qunit-testrunner",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "TAO Frontend Unit & Integration Test Runner based on QUnit and Puppeteer",
     "files": [
         "bin",
