@@ -24,6 +24,7 @@ const getPort = require('get-port');
 const serveStatic = require('serve-static');
 const serveIndex = require('serve-index');
 const bodyParser = require('body-parser');
+const { remove } = require('fs-extra');
 const testRunnerFactory = require('../src/testrunner');
 const webServerFactory = require('../src/webserver');
 const coverageMiddleware = require('../src/middleware/istanbulCoverage');
@@ -102,7 +103,7 @@ yargs
     .help('help')
     .alias('h', 'help');
 
-const setupWebServer = options => {
+const setupWebServer = async (options) => {
     const {
         host,
         port,
@@ -118,6 +119,7 @@ const setupWebServer = options => {
 
     // add coverage middleware if measurement enabled
     if (coverage) {
+        await remove(coverageOutput);
         middlewares.push(
             coverageMiddleware({
                 root,
