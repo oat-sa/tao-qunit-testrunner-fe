@@ -113,7 +113,8 @@ const setupWebServer = async (options) => {
         'coverage-output-dir': coverageOutput,
         'api-mock': apiMock,
         spec,
-        keepalive
+        keepalive,
+        testDir
     } = options;
     const middlewares = [bodyParser.json({ limit: '50mb' })];
 
@@ -152,7 +153,7 @@ const setupWebServer = async (options) => {
         middlewares
     });
 
-    return webServer.listen(port, host);
+    return webServer.listen(port, host, testDir);
 };
 
 const setupTestRunner = options => {

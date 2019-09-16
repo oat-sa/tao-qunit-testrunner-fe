@@ -48,15 +48,17 @@ module.exports = function({ middlewares }) {
          * Start webserver
          * @param {number} port Port where listen
          * @param {string} host Host where host
+         * @param {string} testDir QUnit tests directory
          * @returns {Promise<void>} Promise about webserver listen
          */
-        listen(port, host) {
+        listen(port, host, testDir) {
             return new Promise((resolve, reject) => {
                 server.listen(port, host, err => {
+                    const testDirectory = testDir ? `${testDir}/` : '';
                     if (err) {
                         return reject(err);
                     }
-                    console.log(`Server is listening on http://${host}:${port}/`); // eslint-disable-line no-console
+                    console.log(`Server is listening on http://${host}:${port}/${testDirectory}`); // eslint-disable-line no-console
                     resolve();
                 });
             });
