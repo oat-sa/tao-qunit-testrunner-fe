@@ -18,6 +18,7 @@
 
 const connect = require('connect');
 const http = require('http');
+const path = require('path');
 
 /**
  * Web server factory
@@ -54,11 +55,11 @@ module.exports = function({ middlewares }) {
         listen(port, host, testDir) {
             return new Promise((resolve, reject) => {
                 server.listen(port, host, err => {
-                    const testDirectory = testDir ? `${testDir}/` : '';
+                    const testDirectory = path.normalize(`/${testDir || '/'}`);
                     if (err) {
                         return reject(err);
                     }
-                    console.log(`Server is listening on http://${host}:${port}/${testDirectory}`); // eslint-disable-line no-console
+                    console.log(`Server is listening on http://${host}:${port}${testDirectory}`); // eslint-disable-line no-console
                     resolve();
                 });
             });
