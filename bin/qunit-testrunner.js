@@ -113,8 +113,7 @@ const setupWebServer = async (options) => {
         'coverage-output-dir': coverageOutput,
         'api-mock': apiMock,
         spec,
-        keepalive,
-        testDir
+        keepalive
     } = options;
     const middlewares = [bodyParser.json({ limit: '50mb' })];
 
@@ -153,7 +152,7 @@ const setupWebServer = async (options) => {
         middlewares
     });
 
-    return webServer.listen(port, host, testDir);
+    return webServer.listen(port, host);
 };
 
 const setupTestRunner = options => {
@@ -187,7 +186,13 @@ if (!withoutServer) {
             params.port = freePort;
         });
     }
-    flow = flow.then(() => setupWebServer(params));
+    flow = flow.then(() => setupWebServer(params)
+        .then(() => {
+            const { host, testDir } = params;
+            const testDirectory = path.normalize(`/${testDir || '/'}`);
+            console.log(`Server is listening on http://${host}:${port}${testDirectory}`); // eslint-disable-line no-console
+        })
+    );
 }
 
 if (!keepalive) {
