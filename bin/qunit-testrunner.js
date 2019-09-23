@@ -189,8 +189,7 @@ if (!withoutServer) {
     flow = flow.then(() => setupWebServer(params)
         .then(() => {
             const { host, testDir } = params;
-            const testDirectory = path.normalize(`/${testDir || '/'}`);
-            console.log(`Server is listening on http://${host}:${port}${testDirectory}`); // eslint-disable-line no-console
+            console.log(`Server is listening on http://${host}:${port}${path.normalize(`/${testDir}`)}`); // eslint-disable-line no-console
         })
     );
 }
