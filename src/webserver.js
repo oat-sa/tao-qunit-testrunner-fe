@@ -56,7 +56,6 @@ module.exports = function({ middlewares }) {
                     if (err) {
                         return reject(err);
                     }
-                    console.log(`Server is listening on http://${host}:${port}/`); // eslint-disable-line no-console
                     resolve();
                 });
             });

@@ -186,7 +186,12 @@ if (!withoutServer) {
             params.port = freePort;
         });
     }
-    flow = flow.then(() => setupWebServer(params));
+    flow = flow.then(() => setupWebServer(params)
+        .then(() => {
+            const { host, testDir } = params;
+            console.log(`Server is listening on http://${host}:${port}${path.normalize(`/${testDir}`)}`); // eslint-disable-line no-console
+        })
+    );
 }
 
 if (!keepalive) {

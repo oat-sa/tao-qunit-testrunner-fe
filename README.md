@@ -45,7 +45,8 @@ Requirement: `npm install nyc`
 | --spec                     | Test files pattern                                    | `glob`    | `**/test.html`                  |
 | --mock-api                 | Enables API Mock middleware                           | `boolean` | `false`                         |
 | --without-server           | Start testrunner without server                       | `boolean` | `false`                         |
-| --reporter                 | Test result reporter (`json`, `basic` or custom path) | `string`  | `basic`                         |
+| --reporter                 | Test result reporter (`json`, `basic`, `stats`        |           |                                 |
+|                            | or custom path)                                       | `string`  | `basic`                         |
 | --verbose, -v, -vv ...     | Verbose level                                         | `count`   | `0`                             |
 | --help -h                  | Display help                                          | `boolean` | `false`                         |
 |                            |                                                       |           |                                 |
