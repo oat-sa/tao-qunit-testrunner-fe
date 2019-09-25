@@ -99,6 +99,12 @@ yargs
         describe: 'Output of coverage info',
         default: '.nyc_output'
     })
+    .option('clear-coverage-dir', {
+        describe: 'Clear the Coverage output directory before running test, when coverage option is enabled',
+        alias: 'clr-cov',
+        default: true,
+        boolean: true
+    })
     .group(['coverage', 'coverage-instrument-spec', 'coverage-output-dir'], 'Coverage options:')
     .help('help')
     .alias('h', 'help');
@@ -111,6 +117,7 @@ const setupWebServer = async (options) => {
         coverage,
         'coverage-instrument-spec': instrumentSpec,
         'coverage-output-dir': coverageOutput,
+        'clear-coverage-dir': clearCoverageDir,
         'api-mock': apiMock,
         spec,
         keepalive
@@ -119,7 +126,9 @@ const setupWebServer = async (options) => {
 
     // add coverage middleware if measurement enabled
     if (coverage) {
-        await remove(coverageOutput);
+        if (clearCoverageDir) {
+            await remove(coverageOutput);
+        }
         middlewares.push(
             coverageMiddleware({
                 root,
