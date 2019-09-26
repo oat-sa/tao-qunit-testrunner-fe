@@ -100,7 +100,7 @@ yargs
         default: '.nyc_output'
     })
     .option('clear-coverage-dir', {
-        describe: 'Clear the Coverage output directory before running test, when coverage option is enabled',
+        describe: 'Clear the coverage output directory before running test, when coverage option is enabled',
         alias: 'clr-cov',
         default: true,
         boolean: true
