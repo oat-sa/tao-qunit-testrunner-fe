@@ -101,7 +101,6 @@ yargs
     })
     .option('clear-coverage-dir', {
         describe: 'Clear the coverage output directory before running test, when coverage option is enabled',
-        alias: 'clr-cov',
         default: true,
         boolean: true
     })
