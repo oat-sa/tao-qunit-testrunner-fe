@@ -59,6 +59,8 @@ Requirement: `npm install nyc`
 | --coverage, --cov          | Enable coverage measurement                           | `boolean` | `false`                         |
 | --coverage-instrument-spec | Coverage instrument pattern from `root`               | `glob`    | `src/**/*.js`                   |
 | --coverage-output-dir      | Coverage output directory in `root`                   | `string`  | `.nyc_output`                   |
+| --clear-coverage-dir       | Clear the coverage output directory before running    |           |                                 |
+|                            | test, when coverage option is enabled                 | `bool`    | `true`                          |
 
 ### Config file
 
