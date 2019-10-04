@@ -180,7 +180,6 @@ const setupTestRunner = options => {
 
 const params = yargs.argv;
 const { withoutServer, keepalive } = params;
-let { port } = params;
 
 if (params._[0]) {
     params.spec = path.join('**', params._[0], params.spec);
@@ -189,14 +188,14 @@ if (params._[0]) {
 let flow = Promise.resolve();
 
 if (!withoutServer) {
-    if (!port) {
+    if (!params.port) {
         flow = flow.then(getPort).then(freePort => {
             params.port = freePort;
         });
     }
     flow = flow.then(() => setupWebServer(params)
         .then(() => {
-            const { host, testDir } = params;
+            const { host, port, testDir } = params;
             console.log(`Server is listening on http://${host}:${port}${path.normalize(`/${testDir}`)}`); // eslint-disable-line no-console
         })
     );
