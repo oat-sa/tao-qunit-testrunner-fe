@@ -76,7 +76,7 @@ module.exports = function testRunner(options) {
                 // Path to qunit tests suite
                 targetUrl: `http://${host}:${port}/${testPath}`,
                 // (optional, 30000 by default) global timeout for the tests suite
-                timeout: 30000,
+                timeout: 10000,
                 // (optional, false by default) should the browser console be redirected or not
                 redirectConsole: process.env.REDIRECT_CONSOLE === 'true',
                 puppeteerArgs: [
@@ -124,25 +124,30 @@ module.exports = function testRunner(options) {
             const tests = await this.collectTests();
             let hasFailed = false;
             return Promise.all(
-                tests.map(test => limit(() => this.runTest(test).then(result => {
-                    if (result.stats.failed) {
+                tests.map(test => limit(() => this.runTest(test)
+                    .then(result => {
+                        if (result.stats.failed) {
+                            hasFailed = true;
+                        }
+                        this.onTestDone(result);
+                    })
+                    .catch(e => {
                         hasFailed = true;
-                    }
-                    this.onTestDone(result);
-                })
-                )
-                )
+                        if (e.path) {
+                            this.onTestDone({
+                                modules: {},
+                                stats: {},
+                                timeout: true,
+                                path : e.path
+                            });
+                        } else {
+                            console.error(e); // eslint-disable-line no-console
+                        }
+                    })
+                ))
             )
-                .catch(e => {
-                    if (e.path) {
-                        console.error(chalk.redBright(e.path)); // eslint-disable-line no-console
-                    }
-                    console.error(e); // eslint-disable-line no-console
-                })
-                .then(() => {
-                    this.onDone();
-                })
-                .then(() => !hasFailed);
+            .then(() => this.onDone())
+            .then(() => !hasFailed);
         }
     };
 };

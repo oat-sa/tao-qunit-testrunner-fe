@@ -207,4 +207,7 @@ if (!keepalive) {
         .then(isSuccess => process.exit(isSuccess ? 0 : 1));
 }
 
-flow.catch(e => console.error(e)); // eslint-disable-line no-console
+flow.catch(e => {
+    console.error(e); // eslint-disable-line no-console
+    process.exit(1);
+});
