@@ -20,7 +20,6 @@ const glob = require('glob-promise');
 const path = require('path');
 const { runQunitPuppeteer } = require('node-qunit-puppeteer');
 const promiseLimit = require('promise-limit');
-const chalk = require('chalk');
 
 const limit = promiseLimit(process.env.PARALLEL_TESTS || 5);
 
@@ -76,7 +75,7 @@ module.exports = function testRunner(options) {
                 // Path to qunit tests suite
                 targetUrl: `http://${host}:${port}/${testPath}`,
                 // (optional, 30000 by default) global timeout for the tests suite
-                timeout: 10000,
+                timeout: 30000,
                 // (optional, false by default) should the browser console be redirected or not
                 redirectConsole: process.env.REDIRECT_CONSOLE === 'true',
                 puppeteerArgs: [
