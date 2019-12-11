@@ -8,7 +8,7 @@
     ],
     "scripts": {
         "test:keepAlive": "node ./bin/qunit-testrunner.js --keepalive",
-        "test": "node ./bin/qunit-testrunner.js",
+        "test": "echo 'Expect 3 success, 3 failures and 1 timeout'; node ./bin/qunit-testrunner.js || true",
         "test:cov": "node ./bin/qunit-testrunner --cov",
         "coverage": "nyc report",
         "coverage:html": "nyc report --reporter=lcov && open-cli coverage/lcov-report/index.html",
