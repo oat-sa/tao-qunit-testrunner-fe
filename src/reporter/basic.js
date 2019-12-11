@@ -92,8 +92,11 @@ function printFailedTests(result, verbose) {
  */
 function printDetailedResult(result, verbose) {
     const { modules } = result;
-    if (result.stats.failed || result.timeout) {
+    if (result.stats.failed) {
         console.group(chalk.redBright(result.path));
+    } else if (result.timeout) {
+        console.group(chalk.redBright(result.path));
+        console.log(result.message);
     } else {
         console.group(chalk.greenBright(result.path));
     }

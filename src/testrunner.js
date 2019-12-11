@@ -137,7 +137,8 @@ module.exports = function testRunner(options) {
                                 modules: {},
                                 stats: {},
                                 timeout: true,
-                                path : e.path
+                                path : e.path,
+                                message: e.message
                             });
                         } else {
                             console.error(e); // eslint-disable-line no-console
