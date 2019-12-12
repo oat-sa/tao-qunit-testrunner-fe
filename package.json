@@ -1,6 +1,6 @@
 {
     "name": "@oat-sa/tao-qunit-testrunner",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "TAO Frontend Unit & Integration Test Runner based on QUnit and Puppeteer",
     "files": [
         "bin",
@@ -8,7 +8,7 @@
     ],
     "scripts": {
         "test:keepAlive": "node ./bin/qunit-testrunner.js --keepalive",
-        "test": "node ./bin/qunit-testrunner.js",
+        "test": "echo 'Expect 3 success, 3 failures and 1 timeout'; node ./bin/qunit-testrunner.js || true",
         "test:cov": "node ./bin/qunit-testrunner --cov",
         "coverage": "nyc report",
         "coverage:html": "nyc report --reporter=lcov && open-cli coverage/lcov-report/index.html",
@@ -38,22 +38,22 @@
         "connect": "^3.7.0",
         "fs-extra": "^8.1.0",
         "get-port": "^5.0.0",
-        "glob": "^7.1.4",
+        "glob": "^7.1.6",
         "glob-promise": "^3.4.0",
         "istanbul-lib-instrument": "^3.3.0",
         "minimatch": "^3.0.4",
-        "node-qunit-puppeteer": "^1.0.13",
+        "node-qunit-puppeteer": "^1.0.16",
         "promise-limit": "^2.7.0",
         "serve-index": "^1.9.1",
         "serve-static": "^1.14.1",
         "yargs": "^13.3.0"
     },
     "devDependencies": {
-        "eslint": "^5.16.0",
+        "eslint": "^6.7.0",
         "eslint-plugin-es": "^1.4.1",
         "eslint-plugin-jsdoc": "^8.7.0",
         "nyc": "^14.1.1",
         "open-cli": "^5.0.0",
-        "qunit": "^2.9.2"
+        "qunit": "^2.9.3"
     }
 }
