@@ -20,7 +20,6 @@ const glob = require('glob-promise');
 const path = require('path');
 const { runQunitPuppeteer } = require('node-qunit-puppeteer');
 const promiseLimit = require('promise-limit');
-const chalk = require('chalk');
 
 const limit = promiseLimit(process.env.PARALLEL_TESTS || 5);
 
@@ -124,25 +123,31 @@ module.exports = function testRunner(options) {
             const tests = await this.collectTests();
             let hasFailed = false;
             return Promise.all(
-                tests.map(test => limit(() => this.runTest(test).then(result => {
-                    if (result.stats.failed) {
+                tests.map(test => limit(() => this.runTest(test)
+                    .then(result => {
+                        if (result.stats.failed) {
+                            hasFailed = true;
+                        }
+                        this.onTestDone(result);
+                    })
+                    .catch(e => {
                         hasFailed = true;
-                    }
-                    this.onTestDone(result);
-                })
-                )
-                )
+                        if (e.path) {
+                            this.onTestDone({
+                                modules: {},
+                                stats: {},
+                                timeout: true,
+                                path : e.path,
+                                message: e.message
+                            });
+                        } else {
+                            console.error(e); // eslint-disable-line no-console
+                        }
+                    })
+                ))
             )
-                .catch(e => {
-                    if (e.path) {
-                        console.error(chalk.redBright(e.path)); // eslint-disable-line no-console
-                    }
-                    console.error(e); // eslint-disable-line no-console
-                })
-                .then(() => {
-                    this.onDone();
-                })
-                .then(() => !hasFailed);
+            .then(() => this.onDone())
+            .then(() => !hasFailed);
         }
     };
 };

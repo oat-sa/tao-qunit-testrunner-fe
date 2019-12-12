@@ -1,5 +1,5 @@
 {
-    "verbose": 1,
+    "verbose": 0,
     "testDir": "exampleTest",
     "coverage-instrument-spec": "exampleSrc/**/*.js"
 }

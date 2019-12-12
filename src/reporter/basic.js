@@ -26,6 +26,8 @@ module.exports = {
             case 0:
                 if (result.stats.failed) {
                     process.stdout.write(chalk.redBright('F'));
+                } else if (result.timeout) {
+                    process.stdout.write(chalk.redBright('T'));
                 } else {
                     process.stdout.write(chalk.green('.'));
                 }
@@ -35,6 +37,8 @@ module.exports = {
                 if (result.stats.failed) {
                     console.log();
                     printFailedTests(result, verbose);
+                } else if (result.timeout) {
+                    process.stdout.write(chalk.redBright(`\nTimeout : ${result.path}\n`));
                 } else {
                     process.stdout.write(chalk.greenBright('.'));
                 }
@@ -90,6 +94,9 @@ function printDetailedResult(result, verbose) {
     const { modules } = result;
     if (result.stats.failed) {
         console.group(chalk.redBright(result.path));
+    } else if (result.timeout) {
+        console.group(chalk.redBright(result.path));
+        console.log(result.message);
     } else {
         console.group(chalk.greenBright(result.path));
     }

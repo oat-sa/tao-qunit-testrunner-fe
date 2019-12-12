@@ -24,6 +24,8 @@ module.exports = {
     onTestDone(result, verbose) {
         if (result.stats.failed) {
             printFailedTests(result, verbose);
+        } else if (result.timeout){
+            printTimeoutTest(result);
         } else {
             printDetailedResult(result);
         }
@@ -63,6 +65,14 @@ function printFailedTests(result, verbose) {
         }
     });
     console.groupEnd();
+}
+
+/**
+ * Display test in timeout to the console
+ * @param {object} result Test result
+ */
+function printTimeoutTest(result) {
+    console.group(chalk.redBright(`Timeout : ${result.path}`));
 }
 
 /**
