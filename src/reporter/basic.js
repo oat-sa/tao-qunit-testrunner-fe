@@ -38,7 +38,7 @@ module.exports = {
                     console.log();
                     printFailedTests(result, verbose);
                 } else if (result.timeout) {
-                    process.stdout.write(chalk.redBright(`\nTimeout : ${result.path}\n`));
+                    process.stdout.write(chalk.redBright(`\nTimeout : ${result.path}, on: ${result.message}\n`));
                 } else {
                     process.stdout.write(chalk.greenBright('.'));
                 }
