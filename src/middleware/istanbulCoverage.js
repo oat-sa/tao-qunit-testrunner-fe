@@ -20,7 +20,7 @@ const im = require('istanbul-lib-instrument');
 const path = require('path');
 const { readFile, writeFile, mkdirp } = require('fs-extra');
 const crypto = require('crypto');
-const minimatch = require('minimatch');
+const { minimatch } = require('minimatch');
 
 /**
  * Instrument source with istanbul
@@ -31,19 +31,21 @@ const instrumentFile = async file => {
     const instrumenter = im.createInstrumenter();
 
     const content = await readFile(file);
-    return new Promise(resolve => instrumenter.instrument(content.toString(), file, (err, code) => {
-        if (err) {
-            throw err;
-        }
-        resolve(code);
-    }));
+    return new Promise(resolve =>
+        instrumenter.instrument(content.toString(), file, (err, code) => {
+            if (err) {
+                throw err;
+            }
+            resolve(code);
+        })
+    );
 };
 
 /**
  * Posts coverage info to the server.
  * Client code that will be injected.
  */
-const postCoverageInfo = function() {
+const postCoverageInfo = function () {
     const sendCoverageData = () => {
         if (window.__coverage__) {
             return fetch(`/__coverage__${window.location.pathname}`, {
@@ -62,8 +64,8 @@ const postCoverageInfo = function() {
     const originalSetter = propertyDescriptor && propertyDescriptor.set;
     let qUnit;
     Object.defineProperty(window, 'QUnit', {
-        get : () => qUnit,
-        set: (value) => {
+        get: () => qUnit,
+        set: value => {
             qUnit = value;
             QUnit.done(sendCoverageData);
             if (originalSetter) {
@@ -84,7 +86,7 @@ const postCoverageInfo = function() {
 const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
     const md5sum = crypto.createHash('md5').update(name);
     const coverageOutputDir = path.join(root, coverageOutput);
-    return mkdirp(coverageOutputDir).then(function() {
+    return mkdirp(coverageOutputDir).then(function () {
         return writeFile(path.join(coverageOutputDir, `${md5sum.digest('hex')}.json`), JSON.stringify(info), 'utf8');
     });
 };
@@ -94,17 +96,18 @@ const saveCoverageInfo = (name, info, { root, coverageOutput }) => {
  * @param {string} file File path where post script should be injected
  * @returns {Promise<void>} Promise of script injected
  */
-const injectPostScript = file => readFile(file).then(function(content) {
-    return content.toString().replace(
-        '<head>',
-        `
+const injectPostScript = file =>
+    readFile(file).then(function (content) {
+        return content.toString().replace(
+            '<head>',
+            `
         <head>
         <script>
         (${postCoverageInfo.toString()})();
         </script>
         `
-    );
-});
+        );
+    });
 
 /**
  * Exports a middleware that instruments source files, inject coverage info post script
@@ -131,9 +134,7 @@ module.exports = options => (req, res, next) => {
         // instrument js files
         case minimatch(req.url.substr(1), instrumentSpec):
             sourceFile = path.join(root, req.url);
-            instrumentFile(sourceFile)
-                .then(res.end.bind(res))
-                .catch(next);
+            instrumentFile(sourceFile).then(res.end.bind(res)).catch(next);
             break;
 
         // inject coverage info post script to test html
