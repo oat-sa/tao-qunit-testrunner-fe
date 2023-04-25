@@ -11,9 +11,11 @@
         "test": "echo 'Expect 3 success, 3 failures and 1 timeout'; node ./bin/qunit-testrunner.js || true",
         "test:cov": "node ./bin/qunit-testrunner --cov",
         "coverage": "nyc report",
+        "coverage:clover": "nyc report --reporter=clover",
         "coverage:html": "nyc report --reporter=lcov && open-cli coverage/lcov-report/index.html",
         "coverage:empty": "npx nyc --instrument --include exampleSrc/**/*.js --all --silent echo",
-        "lint": "eslint src exampleSrc exampleTest bin"
+        "lint": "eslint -c .eslintrc.js src exampleSrc exampleTest bin",
+        "lint:report": "npm lint -- --output-file eslint_report.json --format json src | true"
     },
     "bin": {
         "qunit-testrunner": "./bin/qunit-testrunner.js"
@@ -49,11 +51,15 @@
         "yargs": "^17.7.1"
     },
     "devDependencies": {
+        "@oat-sa/eslint-config-tao": "^2.0.0",
+        "@oat-sa/prettier-config": "^0.1.1",
         "eslint": "^8.39.0",
         "eslint-plugin-es": "^4.1.0",
         "eslint-plugin-jsdoc": "^40.1.1",
         "nyc": "^15.1.0",
         "open-cli": "^7.2.0",
+        "prettier": "^2.8.8",
         "qunit": "^2.19.4"
-    }
+    },
+    "prettier": "@oat-sa/prettier-config"
 }
