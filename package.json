@@ -15,7 +15,7 @@
         "coverage:html": "nyc report --reporter=lcov && open-cli coverage/lcov-report/index.html",
         "coverage:empty": "npx nyc --instrument --include exampleSrc/**/*.js --all --silent echo",
         "lint": "eslint -c .eslintrc.js src exampleSrc exampleTest bin",
-        "lint:report": "npm lint -- --output-file eslint_report.json --format json src | true"
+        "lint:report": "eslint -c .eslintrc.js src exampleSrc exampleTest bin --output-file eslint_report.json --format json | true"
     },
     "bin": {
         "qunit-testrunner": "./bin/qunit-testrunner.js"
