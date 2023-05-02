@@ -6,6 +6,9 @@
         "bin",
         "src"
     ],
+    "engines": {
+        "node": ">=14.17"
+    },
     "scripts": {
         "test:keepAlive": "node ./bin/qunit-testrunner.js --keepalive",
         "test": "echo 'Expect 3 success, 3 failures and 1 timeout'; node ./bin/qunit-testrunner.js || true",
