@@ -40,7 +40,7 @@
         "connect": "^3.7.0",
         "fs-extra": "^11.1.1",
         "get-port": "^5.1.1",
-        "glob": "^7.2.3",
+        "glob": "^8.1.0",
         "glob-promise": "^6.0.2",
         "istanbul-lib-instrument": "^3.3.0",
         "minimatch": "^9.0.0",

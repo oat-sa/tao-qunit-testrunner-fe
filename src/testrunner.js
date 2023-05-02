@@ -22,6 +22,7 @@ const { runQunitPuppeteer } = require('node-qunit-puppeteer');
 const promiseLimit = require('promise-limit');
 
 const limit = promiseLimit(process.env.PARALLEL_TESTS || 5);
+const globPath = p => p.replace(/\\/g, '/');
 
 /**
  * Custom error for QUnit runner errors
@@ -61,7 +62,7 @@ module.exports = function testRunner(options) {
          * @returns {Promise<string[]>} Collected test files
          */
         async collectTests() {
-            const files = await glob(path.join(root, testDir, spec));
+            const files = await glob(globPath(path.join(root, testDir, spec)));
             return files.map(file => path.relative(root, file));
         },
 
