@@ -48,7 +48,7 @@
         "promise-limit": "^2.7.0",
         "serve-index": "^1.9.1",
         "serve-static": "^1.15.0",
-        "yargs": "^17.7.1"
+        "yargs": "^17.7.2"
     },
     "devDependencies": {
         "@oat-sa/eslint-config-tao": "^2.0.0",
