@@ -57,8 +57,6 @@
         "@oat-sa/eslint-config-tao": "^2.0.0",
         "@oat-sa/prettier-config": "^0.1.1",
         "eslint": "^8.39.0",
-        "eslint-plugin-es": "^4.1.0",
-        "eslint-plugin-jsdoc": "^40.1.1",
         "nyc": "^15.1.0",
         "open-cli": "^7.2.0",
         "prettier": "^2.8.8",
