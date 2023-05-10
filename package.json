@@ -10,7 +10,7 @@
         "node": ">=14.17"
     },
     "scripts": {
-        "test:keepAlive": "node ./bin/qunit-testrunner.js --keepalive",
+        "test:keepAlive": "node ./bin/qunit-testrunner.js --keepalive --port 5100",
         "test": "echo 'Expect 3 success, 3 failures and 1 timeout'; node ./bin/qunit-testrunner.js || true",
         "test:cov": "node ./bin/qunit-testrunner --cov",
         "coverage": "nyc report",
