@@ -1,6 +1,6 @@
 {
     "name": "@oat-sa/tao-qunit-testrunner",
-    "version": "1.0.3",
+    "version": "2.0.0",
     "description": "TAO Frontend Unit & Integration Test Runner based on QUnit and Puppeteer",
     "files": [
         "bin",
@@ -35,7 +35,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/oat-sa/tao-qunit-testrunner-fe.git"
+        "url": "git+https://github.com/oat-sa/tao-qunit-testrunner-fe.git"
     },
     "dependencies": {
         "body-parser": "^1.20.2",
@@ -62,5 +62,9 @@
         "prettier": "^2.8.8",
         "qunit": "^2.19.4"
     },
-    "prettier": "@oat-sa/prettier-config"
+    "prettier": "@oat-sa/prettier-config",
+    "bugs": {
+        "url": "https://github.com/oat-sa/tao-qunit-testrunner-fe/issues"
+    },
+    "homepage": "https://github.com/oat-sa/tao-qunit-testrunner-fe#readme"
 }
