@@ -24,7 +24,7 @@ module.exports = {
     onTestDone(result, verbose) {
         if (result.stats.failed) {
             printFailedTests(result, verbose);
-        } else if (result.timeout){
+        } else if (result.timeout) {
             printTimeoutTest(result);
         } else {
             printDetailedResult(result);
@@ -72,7 +72,7 @@ function printFailedTests(result, verbose) {
  * @param {object} result Test result
  */
 function printTimeoutTest(result) {
-    console.group(chalk.redBright(`Timeout : ${result.path}`));
+    console.group(chalk.redBright(`Timeout : ${result.path} # ${result.message}`));
 }
 
 /**
@@ -85,8 +85,8 @@ function printDetailedResult(result) {
         console.group(chalk.redBright(result.path));
     } else {
         console.group(chalk.greenBright(result.path));
-        Object.entries(stats).forEach(([ key, value ]) => {
-            console.log(`${key}:`, key === 'runtime' ? `${value}ms`: value);
+        Object.entries(stats).forEach(([key, value]) => {
+            console.log(`${key}:`, key === 'runtime' ? `${value}ms` : value);
         });
     }
     console.groupEnd();
