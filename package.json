@@ -45,7 +45,7 @@
         "get-port": "^5.1.1",
         "glob": "^8.1.0",
         "glob-promise": "^6.0.2",
-        "istanbul-lib-instrument": "^3.3.0",
+        "istanbul-lib-instrument": "^5.2.1",
         "minimatch": "^9.0.0",
         "node-qunit-puppeteer": "^1.1.1",
         "promise-limit": "^2.7.0",
