@@ -42,7 +42,7 @@
         "chalk": "^4.1.2",
         "connect": "^3.7.0",
         "fs-extra": "^11.1.1",
-        "get-port": "^5.1.1",
+        "get-port": "^7.0.0",
         "glob": "^8.1.0",
         "glob-promise": "^6.0.2",
         "istanbul-lib-instrument": "^3.3.0",
