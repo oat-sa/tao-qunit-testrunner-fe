@@ -47,7 +47,7 @@
         "glob-promise": "^6.0.2",
         "istanbul-lib-instrument": "^3.3.0",
         "minimatch": "^9.0.0",
-        "node-qunit-puppeteer": "^1.1.1",
+        "node-qunit-puppeteer": "^2.1.2",
         "promise-limit": "^2.7.0",
         "serve-index": "^1.9.1",
         "serve-static": "^1.15.0",
