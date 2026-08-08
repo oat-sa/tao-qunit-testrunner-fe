@@ -27,6 +27,7 @@
         "tao",
         "test",
         "qunit",
+        "qunit-plugin",
         "testrunner"
     ],
     "license": "GPL-2.0",
