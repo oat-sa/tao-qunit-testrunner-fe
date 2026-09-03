@@ -45,7 +45,7 @@
         "get-port": "^5.1.1",
         "glob": "^8.1.0",
         "glob-promise": "^6.0.2",
-        "istanbul-lib-instrument": "^3.3.0",
+        "istanbul-lib-instrument": "^6.0.3",
         "minimatch": "^9.0.0",
         "node-qunit-puppeteer": "^1.1.1",
         "promise-limit": "^2.7.0",
@@ -61,6 +61,10 @@
         "open-cli": "^7.2.0",
         "prettier": "^2.8.8",
         "qunit": "^2.19.4"
+    },
+    "overrides": {
+        "@babel/traverse": "^7.28.5",
+        "istanbul-lib-instrument": "^6.0.3"
     },
     "prettier": "@oat-sa/prettier-config",
     "bugs": {
